@@ -11,6 +11,12 @@ import Image from "next/image";
 import BG from "@/assets/svg/siginin.svg";
 import React from "react";
 import axiosInstance from "@/config/axios.config";
+import {
+  EMAIL_REGEX,
+  PASSWORD_REGEX,
+  USERNAME_REGEX,
+  DOB_REGEX,
+} from "@/utils/regex";
 
 declare module "@material-tailwind/react" {
   interface InputProps {
@@ -28,7 +34,11 @@ declare module "@material-tailwind/react" {
 }
 
 export default function page() {
-  const [form, setForm] = React.useState({});
+  interface Formstate{
+    email?: string,
+    password?: string,
+  }
+  const [form, setForm] = React.useState<Formstate>({});
 
   const [passwordVisible, setPasswordVisible] = React.useState(false);
   const handleInputChange = (e: Event | any) => {
@@ -39,6 +49,46 @@ const togglePasswordVisibility =()=>{
 }
   console.log(form);
 
+
+  const [universalError, setUniversalError] = React.useState("");
+
+  // Define initial validation state
+  const [isValidData, setIsValidData] = React.useState(true);
+
+
+
+  // Define initial form error state
+
+  const [errorMessages, setErrorMessages] = React.useState({
+    email: "",
+    fullname: "",
+    password: "",
+  });
+
+
+  function signUpValidate(
+    fieldName: string,
+    regex: RegExp,
+    value: string,
+    errorMessage: string
+  ) {
+    if (!regex.test(value)) {
+      setUniversalError("");
+      setErrorMessages((prevErrors) => ({
+        ...prevErrors,
+        [fieldName]: errorMessage,
+      }));
+      setIsValidData(false);
+    } else {
+      setErrorMessages((prevErrors) => ({
+        ...prevErrors,
+        [fieldName]: "",
+      }));
+      setIsValidData(true);
+
+      setUniversalError("");
+    }
+  }
 
   const handleSubmit = async(e:any)=>{
    e.preventDefault()
@@ -82,9 +132,22 @@ const togglePasswordVisibility =()=>{
               <input
                 placeholder="name@mail.com"
                 id="email"
-                onChange={handleInputChange}
+                onChange={(e) => {
+                  handleInputChange(e);
+                  signUpValidate(
+                    "email",
+                    EMAIL_REGEX,
+                    e.target.value,
+                    "Please enter a valid email address."
+                  );
+                }}
                 className="peer h-full w-full rounded-md border border-blue-gray-200 border-t-transparent !border-t-blue-gray-200 bg-transparent px-3 py-3 font-sans text-sm font-normal text-[#CECEC5] outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:!border-t-gray-900 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
               />
+                {errorMessages.email && form?.email && (
+                  <span className="text-red-500 text-[13px]">
+                    {errorMessages.email}
+                  </span>
+                )}
             </div>
             <div className="mb-1 flex flex-col gap-6">
               <Typography className="-mb-3 font-medium border-gray-100 text-[#CECEC5]">
@@ -97,8 +160,15 @@ const togglePasswordVisibility =()=>{
 
                 type={passwordVisible ? "text" : "password"}
                 id="password"
-                onChange={handleInputChange}
-                className="peer h-full w-full rounded-md border border-blue-gray-200 border-t-transparent !border-t-blue-gray-200 bg-transparent px-3 py-3 font-sans text-sm font-normal text-[#CECEC5] outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:!border-t-gray-900 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
+                onChange={(e) => {
+                  handleInputChange(e);
+                  signUpValidate(
+                    "password",
+                    PASSWORD_REGEX,
+                    e.target.value,
+                    "Password must be 8 characters or more with at least one uppercase letter, one lowercase letter, one digit, and one special character (@#$%^&*!)"
+                  );
+                }}className="peer h-full w-full rounded-md border border-blue-gray-200 border-t-transparent !border-t-blue-gray-200 bg-transparent px-3 py-3 font-sans text-sm font-normal text-[#CECEC5] outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:!border-t-gray-900 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
               />
                <div onClick={togglePasswordVisibility} className="absolute right-2 bottom-3">
                {passwordVisible ? (
@@ -161,6 +231,11 @@ const togglePasswordVisibility =()=>{
                     )}
                </div>
               </div>
+              {errorMessages.password && form?.password && (
+                  <span className="text-red-500 text-[13px]">
+                    {errorMessages.password}
+                  </span>
+                )}
             </div>
             <Checkbox
               label={
