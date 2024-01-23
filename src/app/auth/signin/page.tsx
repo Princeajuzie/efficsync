@@ -36,9 +36,9 @@ declare module "@material-tailwind/react" {
 
 export default function page() {
   const [state, setState] = React.useState("idle");
-  interface Formstate{
-    email?: string,
-    password?: string,
+  interface Formstate {
+    email?: string;
+    password?: string;
   }
   const [form, setForm] = React.useState<Formstate>({});
 
@@ -46,20 +46,18 @@ export default function page() {
   const handleInputChange = (e: Event | any) => {
     setForm({ ...form, [e.target.id]: e.target.value });
   };
-const togglePasswordVisibility =()=>{
-  setPasswordVisible((prev: boolean )=> !prev)
-}
+  const togglePasswordVisibility = () => {
+    setPasswordVisible((prev: boolean) => !prev);
+  };
   console.log(form);
-
 
   const [universalError, setUniversalError] = React.useState("");
 
   // Define initial validation state
   const [isValidData, setIsValidData] = React.useState(true);
 
-
-  const [success, setSucess] = React.useState('')
-  const [Eror, setError] = React.useState('')
+  const [success, setSucess] = React.useState("");
+  const [Eror, setError] = React.useState("");
   // Define initial form error state
 
   const [errorMessages, setErrorMessages] = React.useState({
@@ -67,7 +65,6 @@ const togglePasswordVisibility =()=>{
     fullname: "",
     password: "",
   });
-
 
   function signUpValidate(
     fieldName: string,
@@ -93,25 +90,25 @@ const togglePasswordVisibility =()=>{
     }
   }
 
-  const handleSubmit = async(e:any)=>{
-   e.preventDefault()
-   try{
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    try {
+      const response = await axiosInstance.post("client/auth/signin", form, {
+        withCredentials: true,
+      });
 
-     const response = await axiosInstance.post('client/auth/signin', form, {withCredentials: true})
-       
-     if(response.status === 201){
-      console.log(response.data.message)
-      setSucess(response.data.message)
-     }
-     setSucess(response.data.message)
-     console.log("data", response)
-   }catch(error:Error | any){
-    setError(error.response.data.message)
-    console.error(error)
-   }
-    
-  }
-    const allFieldsValids = Object.values(errorMessages).every((value) => !value);
+      if (response.status === 201) {
+        console.log(response.data.message);
+        setSucess(response.data.message);
+      }
+      setSucess(response.data.message);
+      console.log("data", response);
+    } catch (error: Error | any) {
+      setError(error.response.data.message);
+      console.error(error);
+    }
+  };
+  const allFieldsValids = Object.values(errorMessages).every((value) => !value);
 
   return (
     <div>
@@ -120,25 +117,29 @@ const togglePasswordVisibility =()=>{
           <div className="text-center">
             <Typography
               variant="h2"
-              className="font-bold text-2xl mb-4 text-[#CECEC5]"
+              className="font-bold text-2xl mb-4 text-gray-900"
             >
               Welcome Back! Sign in to EfficiSync
             </Typography>
 
             <Typography
               variant="paragraph"
-              className="text-lg font-normal text-[#CECEC5]"
+              className="font-bold text-2xl mb-4 text-gray-900"
             >
               Enter your email and password to login.
             </Typography>
           </div>
-          <form className="mt-8 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2" onSubmit={handleSubmit}>
+          <form
+            className="mt-8 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2"
+            onSubmit={handleSubmit}
+          >
             <div className="mb-1 flex flex-col gap-6">
-              <Typography className="-mb-3 font-medium border-gray-100 text-[#CECEC5]">
+              <Typography className="-mb-3 font-medium border-gray-100 text-gray-900">
                 Your email
               </Typography>
               <input
                 placeholder="name@mail.com"
+                required
                 id="email"
                 onChange={(e) => {
                   handleInputChange(e);
@@ -151,99 +152,102 @@ const togglePasswordVisibility =()=>{
                 }}
                 className="peer h-full w-full rounded-md border border-blue-gray-200 border-t-transparent !border-t-blue-gray-200 bg-transparent px-3 py-3 font-sans text-sm font-normal text-gray-900  outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:!border-t-gray-900 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
               />
-                {errorMessages.email && form?.email && (
-                  <span className="text-red-500 text-[13px]">
-                    {errorMessages.email}
-                  </span>
-                )}
+              {errorMessages.email && form?.email && (
+                <span className="text-red-500 text-[13px]">
+                  {errorMessages.email}
+                </span>
+              )}
             </div>
             <div className="mb-1 flex flex-col gap-6">
-              <Typography className="-mb-3 font-medium border-gray-100 text-[#CECEC5]">
+              <Typography className="-mb-3 font-medium border-gray-100 text-gray-900">
                 password
               </Typography>
               <div className="relative">
-
-              <input
-                placeholder="**********"
-
-                type={passwordVisible ? "text" : "password"}
-                id="password"
-                onChange={(e) => {
-                  handleInputChange(e);
-                  signUpValidate(
-                    "password",
-                    PASSWORD_REGEX,
-                    e.target.value,
-                    "Password must be 8 characters or more with at least one uppercase letter, one lowercase letter, one digit, and one special character (@#$%^&*!)"
-                  );
-                }}   className="peer h-full w-full rounded-md border border-blue-gray-200 border-t-transparent !border-t-blue-gray-200 bg-transparent px-3 py-3 font-sans text-sm font-normal text-gray-900  outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:!border-t-gray-900 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
-              />
-               <div onClick={togglePasswordVisibility} className="absolute right-2 bottom-3">
-               {passwordVisible ? (
-                      <svg
-                        className="w-5 h-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        stroke="#737373"
-                      >
-                        <g id="SVGRepo_bgCarrier" strokeWidth={0} />
-                        <g
-                          id="SVGRepo_tracerCarrier"
+                <input
+                  placeholder="**********"
+                  required
+                  type={passwordVisible ? "text" : "password"}
+                  id="password"
+                  onChange={(e) => {
+                    handleInputChange(e);
+                    signUpValidate(
+                      "password",
+                      PASSWORD_REGEX,
+                      e.target.value,
+                      "Password must be 8 characters or more with at least one uppercase letter, one lowercase letter, one digit, and one special character (@#$%^&*!)"
+                    );
+                  }}
+                  className="peer h-full w-full rounded-md border border-blue-gray-200 border-t-transparent !border-t-blue-gray-200 bg-transparent px-3 py-3 font-sans text-sm font-normal text-gray-900  outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:!border-t-gray-900 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
+                />
+                <div
+                  onClick={togglePasswordVisibility}
+                  className="absolute right-2 bottom-3"
+                >
+                  {passwordVisible ? (
+                    <svg
+                      className="w-5 h-5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      stroke="#737373"
+                    >
+                      <g id="SVGRepo_bgCarrier" strokeWidth={0} />
+                      <g
+                        id="SVGRepo_tracerCarrier"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <g id="SVGRepo_iconCarrier">
+                        {" "}
+                        <path
+                          d="M12 5C5.63636 5 2 12 2 12C2 12 5.63636 19 12 19C18.3636 19 22 12 22 12C22 12 18.3636 5 12 5Z"
+                          stroke="#737373"
+                          strokeWidth="1.5"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                        />
-                        <g id="SVGRepo_iconCarrier">
-                          {" "}
-                          <path
-                            d="M12 5C5.63636 5 2 12 2 12C2 12 5.63636 19 12 19C18.3636 19 22 12 22 12C22 12 18.3636 5 12 5Z"
-                            stroke="#737373"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />{" "}
-                          <path
-                            d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z"
-                            stroke="#737373"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />{" "}
-                        </g>
-                      </svg>
-                    ) : (
-                      <svg
-                        className="w-5 h-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        stroke="#737373"
-                      >
-                        <g id="SVGRepo_bgCarrier" strokeWidth={0} />
-                        <g
-                          id="SVGRepo_tracerCarrier"
+                        />{" "}
+                        <path
+                          d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z"
+                          stroke="#737373"
+                          strokeWidth="1.5"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                        />
-                        <g id="SVGRepo_iconCarrier">
-                          {" "}
-                          <path
-                            d="M20 14.8335C21.3082 13.3317 22 12 22 12C22 12 18.3636 5 12 5C11.6588 5 11.3254 5.02013 11 5.05822C10.6578 5.09828 10.3244 5.15822 10 5.23552M12 9C12.3506 9 12.6872 9.06015 13 9.17071C13.8524 9.47199 14.528 10.1476 14.8293 11C14.9398 11.3128 15 11.6494 15 12M3 3L21 21M12 15C11.6494 15 11.3128 14.9398 11 14.8293C10.1476 14.528 9.47198 13.8524 9.1707 13C9.11386 12.8392 9.07034 12.6721 9.04147 12.5M4.14701 9C3.83877 9.34451 3.56234 9.68241 3.31864 10C2.45286 11.1282 2 12 2 12C2 12 5.63636 19 12 19C12.3412 19 12.6746 18.9799 13 18.9418"
-                            stroke="#737373"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />{" "}
-                        </g>
-                      </svg>
-                    )}
-               </div>
+                        />{" "}
+                      </g>
+                    </svg>
+                  ) : (
+                    <svg
+                      className="w-5 h-5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      stroke="#737373"
+                    >
+                      <g id="SVGRepo_bgCarrier" strokeWidth={0} />
+                      <g
+                        id="SVGRepo_tracerCarrier"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <g id="SVGRepo_iconCarrier">
+                        {" "}
+                        <path
+                          d="M20 14.8335C21.3082 13.3317 22 12 22 12C22 12 18.3636 5 12 5C11.6588 5 11.3254 5.02013 11 5.05822C10.6578 5.09828 10.3244 5.15822 10 5.23552M12 9C12.3506 9 12.6872 9.06015 13 9.17071C13.8524 9.47199 14.528 10.1476 14.8293 11C14.9398 11.3128 15 11.6494 15 12M3 3L21 21M12 15C11.6494 15 11.3128 14.9398 11 14.8293C10.1476 14.528 9.47198 13.8524 9.1707 13C9.11386 12.8392 9.07034 12.6721 9.04147 12.5M4.14701 9C3.83877 9.34451 3.56234 9.68241 3.31864 10C2.45286 11.1282 2 12 2 12C2 12 5.63636 19 12 19C12.3412 19 12.6746 18.9799 13 18.9418"
+                          stroke="#737373"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />{" "}
+                      </g>
+                    </svg>
+                  )}
+                </div>
               </div>
               {errorMessages.password && form?.password && (
-                  <span className="text-red-500 text-[13px]">
-                    {errorMessages.password}
-                  </span>
-                )}
+                <span className="text-red-500 text-[13px]">
+                  {errorMessages.password}
+                </span>
+              )}
             </div>
             <Checkbox
               label={
@@ -263,33 +267,32 @@ const togglePasswordVisibility =()=>{
               }
               containerProps={{ className: "-ml-2.5" }}
             />
-           <ReactiveButton
-                  buttonState={state}
-                  idleText="Log in"
-                  loadingText="Loading..."
-                  successText={success}
-                  // errorText={error}
-                  disabled={!allFieldsValids}
-                  width="100%"
-                  size="medium"
-                  type="submit"
-                  style={{
-                    display: "block",
-                    borderRadius: "0.5rem",
-                    padding: "0.75rem 1.25rem",
-                    fontSize: "0.875rem",
-                    fontWeight: "500",
-                    color: "white",
-                    background: "#0FADF9",
-                    cursor: `${allFieldsValids? "pointer" : "not-allowed"}`,
-                  }}
-                />
+            <ReactiveButton
+              buttonState={state}
+              idleText="Log in"
+              loadingText="Loading..."
+              successText={success}
+              // errorText={error}
+              disabled={!allFieldsValids}
+              width="100%"
+              size="medium"
+              type="submit"
+              style={{
+                display: "block",
+                borderRadius: "0.5rem",
+                padding: "0.75rem 1.25rem",
+                fontSize: "0.875rem",
+                fontWeight: "500",
+                color: "white",
+                background: "#0FADF9",
+                cursor: `${allFieldsValids ? "pointer" : "not-allowed"}`,
+              }}
+            />
 
             <div className="space-y-4 mt-8">
               <Button
                 size="lg"
                 color="white"
-
                 className="flex items-center gap-2 justify-center shadow-md bg-[#131313]"
                 fullWidth
               >
@@ -341,7 +344,7 @@ const togglePasswordVisibility =()=>{
               >
                 <Link
                   href="/auth/recovery"
-                  className="text-[#ffff] ml-1 underline text-sm"
+                  className="text-[#000] ml-1 underline text-sm"
                 >
                   Recovery?
                 </Link>
@@ -353,7 +356,7 @@ const togglePasswordVisibility =()=>{
                 New?
                 <Link
                   href="/auth/signup"
-                  className="text-[#ffff] ml-1 underline text-sm"
+                  className="text-[#000] ml-1 underline text-sm"
                 >
                   Sign up
                 </Link>
