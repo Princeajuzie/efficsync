@@ -10,6 +10,7 @@ import Link from "next/link";
 import Image from "next/image";
 import BG from "@/assets/svg/siginin.svg";
 import React from "react";
+import ReactiveButton from "reactive-button";
 import axiosInstance from "@/config/axios.config";
 import {
   EMAIL_REGEX,
@@ -34,6 +35,7 @@ declare module "@material-tailwind/react" {
 }
 
 export default function page() {
+  const [state, setState] = React.useState("idle");
   interface Formstate{
     email?: string,
     password?: string,
@@ -56,7 +58,8 @@ const togglePasswordVisibility =()=>{
   const [isValidData, setIsValidData] = React.useState(true);
 
 
-
+  const [success, setSucess] = React.useState('')
+  const [Eror, setError] = React.useState('')
   // Define initial form error state
 
   const [errorMessages, setErrorMessages] = React.useState({
@@ -105,6 +108,8 @@ const togglePasswordVisibility =()=>{
    }
     
   }
+    const allFieldsValids = Object.values(errorMessages).every((value) => !value);
+
   return (
     <div>
       <section className="m-8 flex ">
@@ -141,7 +146,7 @@ const togglePasswordVisibility =()=>{
                     "Please enter a valid email address."
                   );
                 }}
-                className="peer h-full w-full rounded-md border border-blue-gray-200 border-t-transparent !border-t-blue-gray-200 bg-transparent px-3 py-3 font-sans text-sm font-normal text-[#CECEC5] outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:!border-t-gray-900 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
+                className="peer h-full w-full rounded-md border border-blue-gray-200 border-t-transparent !border-t-blue-gray-200 bg-transparent px-3 py-3 font-sans text-sm font-normal text-gray-900  outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:!border-t-gray-900 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
               />
                 {errorMessages.email && form?.email && (
                   <span className="text-red-500 text-[13px]">
@@ -168,7 +173,7 @@ const togglePasswordVisibility =()=>{
                     e.target.value,
                     "Password must be 8 characters or more with at least one uppercase letter, one lowercase letter, one digit, and one special character (@#$%^&*!)"
                   );
-                }}className="peer h-full w-full rounded-md border border-blue-gray-200 border-t-transparent !border-t-blue-gray-200 bg-transparent px-3 py-3 font-sans text-sm font-normal text-[#CECEC5] outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:!border-t-gray-900 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
+                }}   className="peer h-full w-full rounded-md border border-blue-gray-200 border-t-transparent !border-t-blue-gray-200 bg-transparent px-3 py-3 font-sans text-sm font-normal text-gray-900  outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:!border-t-gray-900 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
               />
                <div onClick={togglePasswordVisibility} className="absolute right-2 bottom-3">
                {passwordVisible ? (
@@ -255,9 +260,27 @@ const togglePasswordVisibility =()=>{
               }
               containerProps={{ className: "-ml-2.5" }}
             />
-            <Button className="mt-6 bg-[#0FADF9]" fullWidth onClick={handleSubmit} type="submit">
-              Register Now
-            </Button>
+           <ReactiveButton
+                  buttonState={state}
+                  idleText="Log in"
+                  loadingText="Loading"
+                  successText={success}
+                  // errorText={error}
+                  disabled={!allFieldsValids}
+                  width="100%"
+                  size="medium"
+                  type="submit"
+                  style={{
+                    display: "block",
+                    borderRadius: "0.5rem",
+                    padding: "0.75rem 1.25rem",
+                    fontSize: "0.875rem",
+                    fontWeight: "500",
+                    color: "white",
+                    background: "#0FADF9",
+                    cursor: `${allFieldsValids? "pointer" : "not-allowed"}`,
+                  }}
+                />
 
             <div className="space-y-4 mt-8">
               <Button
