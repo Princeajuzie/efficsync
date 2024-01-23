@@ -313,7 +313,7 @@ export default function page() {
 <ReactiveButton
                   buttonState={state}
                   idleText="Log in"
-                  loadingText="Loading"
+                  loadingText="Loading..."
                   successText={success}
                   // errorText={error}
                   disabled={!allFieldsValids}

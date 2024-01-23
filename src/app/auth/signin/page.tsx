@@ -101,9 +101,12 @@ const togglePasswordVisibility =()=>{
        
      if(response.status === 201){
       console.log(response.data.message)
+      setSucess(response.data.message)
      }
+     setSucess(response.data.message)
      console.log("data", response)
-   }catch(error){
+   }catch(error:Error | any){
+    setError(error.response.data.message)
     console.error(error)
    }
     
@@ -263,7 +266,7 @@ const togglePasswordVisibility =()=>{
            <ReactiveButton
                   buttonState={state}
                   idleText="Log in"
-                  loadingText="Loading"
+                  loadingText="Loading..."
                   successText={success}
                   // errorText={error}
                   disabled={!allFieldsValids}
